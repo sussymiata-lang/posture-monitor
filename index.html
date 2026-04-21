@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Posture Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#060608;--surface:#0d0d10;--border:rgba(255,255,255,0.07);
+  --text:rgba(255,255,255,0.82);--muted:rgba(255,255,255,0.30);
+  --hint:rgba(255,255,255,0.12);
+  --green:#34C759;--amber:#FF9F0A;--red:#FF453A;--blue:#5AC8FA;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:.028;pointer-events:none;z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;
+  justify-content:space-between;padding:0 48px;height:58px;
+  border-bottom:1px solid var(--border);background:rgba(6,6,8,.85);backdrop-filter:blur(20px)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:var(--text);text-decoration:none}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;letter-spacing:.02em}
+.nav-links a:hover{color:var(--text)}
+.nav-badge{font-size:11px;color:var(--muted);border:1px solid var(--border);padding:4px 12px;border-radius:20px}
+
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:100px 24px 80px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);
+  width:600px;height:600px;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(52,199,89,.05) 0%,transparent 70%)}
+
+.hero-eyebrow{font-size:11px;letter-spacing:.18em;color:var(--green);margin-bottom:28px;
+  opacity:0;animation:fadeUp .7s .1s ease forwards}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,12vw,148px);
+  line-height:.92;letter-spacing:-.01em;color:#fff;opacity:0;animation:fadeUp .8s .2s ease forwards}
+.hero-title span{color:var(--green)}
+.hero-sub{margin-top:28px;font-size:16px;line-height:1.75;color:var(--muted);
+  max-width:420px;font-weight:300;opacity:0;animation:fadeUp .8s .35s ease forwards}
+.figure-wrap{margin:52px 0 48px;opacity:0;animation:fadeUp .9s .45s ease forwards;position:relative;z-index:1}
+
+.dl-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+  opacity:0;animation:fadeUp .9s .55s ease forwards}
+.dl-btn{display:flex;align-items:center;gap:13px;padding:14px 28px;border-radius:14px;
+  text-decoration:none;border:1px solid var(--border);position:relative;overflow:hidden;
+  transition:transform .18s ease,border-color .2s ease,box-shadow .25s ease}
+.dl-btn:hover{transform:translateY(-2px)}
+.dl-btn:active{transform:scale(.98)}
+.dl-btn-win{background:rgba(255,255,255,.04)}
+.dl-btn-win:hover{border-color:rgba(255,255,255,.2);box-shadow:0 0 30px rgba(255,255,255,.06)}
+.dl-btn-mac{background:rgba(52,199,89,.06);border-color:rgba(52,199,89,.15)}
+.dl-btn-mac:hover{border-color:rgba(52,199,89,.38);box-shadow:0 0 32px rgba(52,199,89,.12)}
+.dl-btn-soon{opacity:.45;cursor:not-allowed;pointer-events:none}
+.dl-icon{width:32px;height:32px;flex-shrink:0}
+.dl-text{text-align:left}
+.dl-text-top{font-size:11px;color:var(--muted);letter-spacing:.04em;display:block;margin-bottom:2px}
+.dl-text-main{font-size:15px;font-weight:400;color:var(--text);display:block}
+.dl-btn-mac .dl-text-main{color:rgba(255,255,255,.92)}
+.soon-pill{font-size:9px;letter-spacing:.1em;padding:2px 8px;border-radius:10px;
+  background:rgba(255,255,255,.07);color:var(--muted);margin-left:4px;vertical-align:middle}
+
+.section-divider{width:100%;height:1px;background:var(--border)}
+
+.features{padding:100px 48px;max-width:1100px;margin:0 auto}
+.section-label{font-size:11px;letter-spacing:.18em;color:var(--muted);margin-bottom:48px;text-align:center}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.feature-card{background:var(--surface);padding:36px 32px;transition:background .2s}
+.feature-card:hover{background:#111115}
+.feature-dot{width:8px;height:8px;border-radius:50%;margin-bottom:20px}
+.feature-title{font-size:15px;font-weight:400;color:rgba(255,255,255,.85);margin-bottom:8px;letter-spacing:.01em}
+.feature-desc{font-size:13px;line-height:1.7;color:var(--muted)}
+
+.how{padding:80px 48px 100px;max-width:900px;margin:0 auto;text-align:center}
+.steps{display:flex;gap:0;margin-top:52px;position:relative}
+.steps::before{content:'';position:absolute;top:20px;left:10%;right:10%;height:1px;background:var(--border)}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 16px}
+.step-num{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);
+  background:var(--surface);display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;
+  color:rgba(255,255,255,.5);position:relative;z-index:1}
+.step-title{font-size:13px;font-weight:400;color:rgba(255,255,255,.75)}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.65}
+
+footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;
+  align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.15em;color:var(--hint)}
+.footer-text{font-size:12px;color:var(--hint)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:600px){
+  nav{padding:0 20px}.nav-links{display:none}
+  .features{padding:60px 20px}.how{padding:60px 20px 80px}
+  .steps{flex-direction:column;align-items:center;gap:32px}
+  .steps::before{display:none}
+  footer{padding:24px 20px;flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">Posture Monitor</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+  <span class="nav-badge">v1.0 — Free</span>
+</nav>
+
+<section class="hero">
+  <p class="hero-eyebrow">Real-time posture detection</p>
+  <h1 class="hero-title">SIT<br><span>RIGHT</span></h1>
+  <p class="hero-sub">MediaPipe-powered posture monitoring that watches your head, shoulders, and spine — so you don't have to think about it.</p>
+
+  <div class="figure-wrap">
+    <canvas id="fig" width="140" height="140"></canvas>
+  </div>
+
+  <div class="dl-row" id="download">
+    <a class="dl-btn dl-btn-win" href="PostureMonitor.exe" download>
+      <svg class="dl-icon" viewBox="0 0 32 32" fill="none">
+        <rect x="2"  y="2"  width="13" height="13" rx="2" fill="rgba(255,255,255,0.55)"/>
+        <rect x="17" y="2"  width="13" height="13" rx="2" fill="rgba(255,255,255,0.55)"/>
+        <rect x="2"  y="17" width="13" height="13" rx="2" fill="rgba(255,255,255,0.55)"/>
+        <rect x="17" y="17" width="13" height="13" rx="2" fill="rgba(255,255,255,0.55)"/>
+      </svg>
+      <div class="dl-text">
+        <span class="dl-text-top">Download for</span>
+        <span class="dl-text-main">Windows 11</span>
+      </div>
+    </a>
+
+    <a class="dl-btn dl-btn-mac dl-btn-soon" href="#" download>
+      <svg class="dl-icon" viewBox="0 0 32 32" fill="none">
+        <path d="M21 7c-1.8.1-3.3 1.2-4.2 2.3C15.9 8.2 14.3 7 12.5 7 9.2 7 6 9.8 6 15.2c0 4.4 2.3 10.3 4.7 10.3.9 0 1.7-.6 2.8-.6 1.1 0 1.9.6 2.8.6 2.4 0 4.2-5.1 4.7-7.3-1.8-.8-3-2.4-3-4.1 0-2 1.2-3.6 3-4.2-.9-1.5-2-2.9-2-2.9H21z" fill="rgba(52,199,89,0.65)"/>
+        <ellipse cx="19.5" cy="5" rx="2.2" ry="2.8" fill="rgba(52,199,89,0.45)"/>
+      </svg>
+      <div class="dl-text">
+        <span class="dl-text-top">Download for</span>
+        <span class="dl-text-main">macOS <span class="soon-pill">Soon</span></span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="features" id="features">
+  <p class="section-label">What it detects</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-dot" style="background:#FF9F0A"></div>
+      <div class="feature-title">Head tilt</div>
+      <div class="feature-desc">Detects when your head rolls left or right beyond your calibrated baseline.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-dot" style="background:#FF453A"></div>
+      <div class="feature-title">Head down</div>
+      <div class="feature-desc">Catches chin-drop from looking down at your phone or keyboard.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-dot" style="background:#5AC8FA"></div>
+      <div class="feature-title">Head up / back</div>
+      <div class="feature-desc">Flags when your monitor is too low and you're craning upward.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-dot" style="background:#FF9F0A"></div>
+      <div class="feature-title">Shoulder shrug</div>
+      <div class="feature-desc">Tracks whether your shoulders are creeping up toward your ears.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-dot" style="background:#FF9F0A"></div>
+      <div class="feature-title">Forward slouch</div>
+      <div class="feature-desc">Measures face size growth and position to detect leaning into the screen.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-dot" style="background:#34C759"></div>
+      <div class="feature-title">Session scoring</div>
+      <div class="feature-desc">Live posture score and colour-coded timeline show exactly when you went wrong.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="how" id="how">
+  <p class="section-label">How it works</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Open the app</div>
+      <div class="step-desc">Launch and click Begin session. No account needed.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Calibrate</div>
+      <div class="step-desc">Sit upright, look at the screen, press C.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Work normally</div>
+      <div class="step-desc">The app alerts you whenever posture slips.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Review</div>
+      <div class="step-desc">Check your score and timeline to spot patterns.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<footer>
+  <span class="footer-logo">Posture Monitor</span>
+  <span class="footer-text">Free and open source · Built with Python, PyQt6, MediaPipe</span>
+  <span class="footer-text">v1.0</span>
+</footer>
+
+<script>
+const canvas=document.getElementById('fig'),ctx=canvas.getContext('2d');
+let t=0;
+const DOTS=[
+  {r:44,speed:.050,phase:0.00,rgb:[52,199,89]},
+  {r:30,speed:.078,phase:2.09,rgb:[90,180,255]},
+  {r:54,speed:.032,phase:4.19,rgb:[255,159,10]},
+];
+function draw(){
+  ctx.clearRect(0,0,140,140);
+  const cx=70,cy=70;
+  const sc=1+Math.sin(t*.04)*.07;
+  const sx=Math.sin(t*.025)*3.5;
+  const nd=Math.sin(t*.03)*2.8;
+  ctx.save();
+  ctx.translate(cx,cy);ctx.scale(sc,sc);ctx.translate(-cx,-cy);
+  ctx.strokeStyle='rgba(255,255,255,0.72)';ctx.lineWidth=2.2;
+  ctx.lineCap='round';ctx.lineJoin='round';
+  const hx=cx+sx*.5,hy=22+nd;
+  const L=[[hx,hy,10],[hx,hy+10,cx,46],[cx-20,46,cx+20,46],[cx,46,cx,68],
+            [cx-20,46,cx-22,61],[cx+20,46,cx+22,61],[cx-16,68,cx+16,68],
+            [cx-16,68,cx-16,84],[cx+16,68,cx+16,84],[cx-16,84,cx-7,89],[cx+16,84,cx+7,89]];
+  L.forEach((s,i)=>{
+    ctx.beginPath();
+    if(i===0){ctx.arc(s[0],s[1],s[2],0,Math.PI*2);}
+    else{ctx.moveTo(s[0],s[1]);ctx.lineTo(s[2],s[3]);}
+    ctx.stroke();
+  });
+  DOTS.forEach(({r,speed,phase,rgb})=>{
+    const a=t*speed+phase;
+    const alpha=.25+Math.abs(Math.sin(t*speed*.9+phase))*.65;
+    ctx.beginPath();
+    ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,3.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${rgb.join(',')},${alpha.toFixed(2)})`;
+    ctx.fill();
+  });
+  ctx.restore();
+  t++;requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
